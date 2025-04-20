@@ -25,6 +25,7 @@ const LayerPanel = ({
   const [editingNameIndex, setEditingNameIndex] = useState<number | null>(null);
   const [tempName, setTempName] = useState<string>('');
   const [colorPickerLayerIndex, setColorPickerLayerIndex] = useState<number | null>(null);
+  const [colorPickerPosition, setColorPickerPosition] = useState({ top: 0, left: 0 });
 
   const startEditingName = (index: number) => {
     setEditingNameIndex(index);
@@ -70,6 +71,15 @@ const LayerPanel = ({
   
   const toggleColorPicker = (index: number, e: React.MouseEvent) => {
     e.stopPropagation();
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+    
+    // Position the picker to the left of the button
+    setColorPickerPosition({
+      top: rect.top,
+      left: rect.left - 225 // Width of the picker + some padding
+    });
+    
     setColorPickerLayerIndex(colorPickerLayerIndex === index ? null : index);
   };
   
@@ -195,6 +205,7 @@ const LayerPanel = ({
                     </div>
 
                     <div className="layer-controls">
+                      Blend
                       <select
                         className="blend-mode-select"
                         value={layer.parameters.blendMode}
@@ -223,6 +234,7 @@ const LayerPanel = ({
                         <option value="luminosity">Luminosity</option>
                       </select>
                       
+                      Stroke
                       <input
                         type="number"
                         min="1"
@@ -237,7 +249,14 @@ const LayerPanel = ({
                   </div>
                   
                   {colorPickerLayerIndex === index && (
-                    <div className="color-picker-popover layer-color-picker" onClick={(e) => e.stopPropagation()}>
+                    <div 
+                      className="color-picker-popover layer-color-picker" 
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        top: `${colorPickerPosition.top}px`,
+                        left: `${colorPickerPosition.left}px`
+                      }}
+                    >
                       <div 
                         className="color-picker-cover" 
                         onClick={(e) => {

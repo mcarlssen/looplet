@@ -116,6 +116,8 @@
   right: 0;
   bottom: 0;
   z-index: 999;
+  background-color: transparent;
+  pointer-events: auto;
 }
 
 .no-layer-message {
@@ -170,6 +172,8 @@
   cursor: pointer;
   transition: background-color 0.2s;
   box-sizing: border-box;
+  position: relative;
+  overflow: visible;
 }
 
 .layer-item-content {
@@ -247,7 +251,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-left: 34px; /* Align with layer name, accounting for visibility toggle */
+}
+
+.layer-controls{
+  font-size: .7rem;
+  font-family: var(--font-body);
+}
+
+.blend-mode-select, .stroke-width-input {
+  font-size: .6rem;
+  font-family: var(--font-body);
 }
 
 .stroke-width-input {
@@ -302,15 +315,56 @@
 }
 
 .layer-color-picker {
-  position: absolute;
-  top: 30px;
-  right: 0;
-  z-index: 110;
-  margin-top: 5px;
+  position: fixed;
+  z-index: 9999;
+  background-color: white;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
 }
 
 .layer-color-picker .color-picker-wrapper {
-  margin-right: -80px; /* Adjust to center the picker visually */
+  position: relative;
+  z-index: 10000;
+}
+
+/* Style the react-colorful picker */
+.layer-color-picker .react-colorful {
+  width: 200px;
+  height: 200px;
+}
+
+.layer-color-picker .react-colorful__saturation {
+  border-radius: 4px;
+  border-bottom: none;
+}
+
+.layer-color-picker .react-colorful__hue {
+  height: 24px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.color-picker-value {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-family: monospace;
+  color: #333;
+  background-color: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.color-picker-cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998;
+  background-color: transparent;
+  pointer-events: auto;
 }
 
 .layer-actions {
@@ -468,14 +522,6 @@
   height: 100%;
   pointer-events: none;
   z-index: 10;
-}
-
-.color-picker-value {
-  margin-top: 8px;
-  text-align: center;
-  font-size: 14px;
-  font-family: monospace;
-  color: #333;
 }
 
 /* Advanced Parameters Panel */
@@ -682,7 +728,16 @@
   font-weight: 500;
 }
 
-/* Toggle Switch */
+/* Remove old toggle styles */
+.toggle-circle {
+  display: none;
+}
+
+.toggle-text {
+  display: none;
+}
+
+/* New toggle switch styles */
 .toggle-switch {
   display: flex;
   align-items: center;
@@ -699,59 +754,49 @@
 .toggle-label {
   cursor: pointer;
   width: 100%;
-  height: 32px;
-  background: #e0e0e0;
+  height: 24px;
+  background: #2140a5;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: 100px;
   position: relative;
   transition: all 0.3s ease;
   font-size: 0.9rem;
   overflow: hidden;
-}
-
-.toggle-switch input:checked + .toggle-label {
-  background: #3060ff;
+  padding: 2px;
 }
 
 .toggle-text-inside {
-  color: #333;
+  color: white;
   font-size: 0.9rem;
   font-weight: 500;
-  transition: color 0.3s ease;
   z-index: 2;
   user-select: none;
   position: relative;
-}
-
-.toggle-switch input:checked + .toggle-label .toggle-text-inside {
-  color: white;
+  width: 100%;
+  text-align: center;
+  transition: color 0.3s ease;
 }
 
 .toggle-label::before {
   content: '';
   position: absolute;
-  width: calc(100% - 4px);
-  height: 28px;
-  background: #fff;
-  border-radius: 4px;
+  width: 50%;
+  height: calc(100% - 4px);
+  background: white;
+  border-radius: 100px;
   transition: 0.3s;
   left: 2px;
   z-index: 1;
 }
 
 .toggle-switch input:checked + .toggle-label::before {
-  background: #3060ff;
+  left: calc(50% - 2px);
 }
 
-/* Remove old toggle styles */
-.toggle-circle {
-  display: none;
-}
-
-.toggle-text {
-  display: none;
+.toggle-switch input:checked + .toggle-label .toggle-text-inside {
+  color: white;
 }
 
 /* Parameter group with inline label and control */

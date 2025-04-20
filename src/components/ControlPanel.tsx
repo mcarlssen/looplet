@@ -282,9 +282,10 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
             }}
           />
           <label htmlFor="roll-type" className="toggle-label">
-            <span className="toggle-text-inside">
-              {layer.parameters.isHypotrochoid ? 'Inside' : 'Outside'}
-            </span>
+            <div className="toggle-text-inside" style={{ display: 'flex', width: '100%' }}>
+              <span style={{ flex: 1, color: layer.parameters.isHypotrochoid ? '#333' : 'white' }}>Inside</span>
+              <span style={{ flex: 1, color: layer.parameters.isHypotrochoid ? 'white' : '#333' }}>Outside</span>
+            </div>
           </label>
         </div>
       </div>
