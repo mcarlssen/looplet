@@ -4,6 +4,7 @@ import ControlPanel from './components/ControlPanel'
 import LayerPanel from './components/LayerPanel'
 import { SpiroLayer } from './types'
 import { toPng } from 'html-to-image'
+import { Analytics } from "@vercel/analytics/react"
 import { generateSpirographPoints } from './utils/spiroCalculations'
 import './App.css'
 
@@ -263,6 +264,7 @@ function App() {
           </button>
         </div>
       </div>
+      <Analytics />
     </div>
   )
 }
