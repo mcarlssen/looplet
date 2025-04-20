@@ -344,6 +344,7 @@ const SpiroCanvas = ({
 
   return (
     <div className="spiro-canvas-wrapper">
+      <h1 className="app-title">looplet</h1>
       <canvas 
         ref={canvasRef}
         className="spiro-canvas"

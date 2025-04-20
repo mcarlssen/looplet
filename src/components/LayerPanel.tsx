@@ -205,7 +205,7 @@ const LayerPanel = ({
                     </div>
 
                     <div className="layer-controls">
-                      Blend
+                      <span className="control-label">Blend</span>
                       <select
                         className="blend-mode-select"
                         value={layer.parameters.blendMode}
@@ -234,7 +234,7 @@ const LayerPanel = ({
                         <option value="luminosity">Luminosity</option>
                       </select>
                       
-                      Stroke
+                      <span className="control-label">Stroke</span>
                       <input
                         type="number"
                         min="1"
@@ -245,6 +245,22 @@ const LayerPanel = ({
                         className="stroke-width-input"
                         title="Stroke width"
                       />
+
+                      <span className="control-label">Line</span>
+                      <select
+                        className="line-style-select"
+                        value={layer.parameters.lineStyle || 'solid'}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          handleParameterChange(index, 'lineStyle', e.target.value);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        title="Line Style"
+                      >
+                        <option value="solid">Solid</option>
+                        <option value="dashed">Dashed</option>
+                        <option value="dotted">Dotted</option>
+                      </select>
                     </div>
                   </div>
                   

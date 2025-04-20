@@ -17,18 +17,12 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [startAngleDegrees, setStartAngleDegrees] = useState<number>(0);
   const [hoverParam, setHoverParam] = useState<ParameterKey | null>(null);
-  const [harmonyFactor, setHarmonyFactor] = useState<number>(0);
-  const [validRValues, setValidRValues] = useState<number[]>([]);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const MIN_HARMONY = 0.5;
   const [colorPickerPosition, setColorPickerPosition] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     if (layer) {
-      const { R, r } = layer.parameters;
       setStartAngleDegrees(Math.round((layer.parameters.startAngle * 180) / Math.PI));
-      setHarmonyFactor(calculateHarmonyFactor(R, r));
-      setValidRValues(getValidRValues(R, MIN_HARMONY));
     }
   }, [layer]);
 
@@ -49,19 +43,67 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
     if (!layer) return;
     
     const newLayer = { ...layer };
+    let newR = layer.parameters.R;
+    let newSmallR = layer.parameters.r;
+
+    if (key === 'R') {
+      newR = value as number;
+    } else if (key === 'r') {
+      newSmallR = value as number;
+    }
+
+    // Calculate harmony for the new parameters
+    const newHarmony = calculateHarmonyFactor(newR, newSmallR);
+    
+    // If harmony would be too low, find the nearest valid r value
+    if (key === 'r' && newHarmony < layer.parameters.harmonyThreshold) {
+      const originalValue = newSmallR;
+      // Try values around the desired r to find one with acceptable harmony
+      let bestR = newSmallR;
+      let bestHarmony = newHarmony;
+      const searchRange = 20; // Look 20 units in each direction
+      
+      for (let offset = 1; offset <= searchRange; offset++) {
+        // Try larger r
+        const largerR = newSmallR + offset;
+        if (largerR < layer.parameters.maxr) {
+          const largerHarmony = calculateHarmonyFactor(newR, largerR);
+          if (largerHarmony >= layer.parameters.harmonyThreshold && largerHarmony > bestHarmony) {
+            bestR = largerR;
+            bestHarmony = largerHarmony;
+            break;
+          }
+        }
+        
+        // Try smaller r
+        const smallerR = newSmallR - offset;
+        if (smallerR >= 10) { // Minimum r value
+          const smallerHarmony = calculateHarmonyFactor(newR, smallerR);
+          if (smallerHarmony >= layer.parameters.harmonyThreshold && smallerHarmony > bestHarmony) {
+            bestR = smallerR;
+            bestHarmony = smallerHarmony;
+            break;
+          }
+        }
+      }
+      
+      // Use the best found r value and show notification
+      if (bestR !== originalValue) {
+        newSmallR = bestR;
+      }
+    }
+
     if (key === 'tooth') {
       newLayer.parameters = {
         ...layer.parameters,
         tooth: value as number,
-        // Only round R to nearest tooth value, leave r unchanged
-        R: Math.round(layer.parameters.R / (value as number)) * (value as number)
+        R: Math.round(newR / (value as number)) * (value as number)
       };
     } else if (key === 'r') {
-      // When r changes, ensure d doesn't exceed r-1
       newLayer.parameters = {
         ...layer.parameters,
-        r: value as number,
-        d: Math.min(layer.parameters.d, (value as number) - 1)
+        r: newSmallR,
+        d: Math.min(layer.parameters.d, newSmallR - 1)
       };
     } else {
       newLayer.parameters = {
@@ -98,16 +140,6 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
     }, 100);
   };
 
-  // Calculate harmony indicator color
-  const getHarmonyColor = () => {
-    if (harmonyFactor > 0.7) return '#4CAF50'; // Good (green)
-    if (harmonyFactor > 0.4) return '#FFC107'; // Medium (yellow)
-    return '#F44336'; // Poor (red)
-  };
-  
-  const harmonyColor = getHarmonyColor();
-  const harmonyPercentage = Math.round(harmonyFactor * 100);
-  
   // Common props for number inputs
   const numberInputProps = (
     key: ParameterKey,
@@ -200,19 +232,6 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
       />
       
       <h2>Parameters</h2>
-      
-      <div className="harmony-indicator">
-        <div className="harmony-label">Pattern Harmony: <span className="harmony-percentage">{Math.round(harmonyFactor * 100)}%</span></div>
-        <div className="harmony-meter">
-          <div 
-            className="harmony-value" 
-            style={{ 
-              width: `${harmonyPercentage}%`, 
-              backgroundColor: harmonyColor
-            }}
-          ></div>
-        </div>
-      </div>
       
       <div 
         className="parameter-group"

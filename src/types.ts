@@ -10,6 +10,8 @@ export type SpiroParameters = {
   tooth: number;        // Minimum granularity for R and r values
   maxR: number;         // Maximum allowed value for R
   maxr: number;         // Maximum allowed value for r
+  lineStyle: string;    // Line style
+  harmonyThreshold: number;
 };
 
 export type SpiroLayer = {

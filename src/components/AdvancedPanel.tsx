@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SpiroLayer } from '../types';
-import { calculateOptimalToothSizes, calculateToothHarmony } from '../utils/spiroCalculations';
+import { calculateOptimalToothSizes, calculateToothHarmony, calculateHarmonyFactor } from '../utils/spiroCalculations';
 
 interface AdvancedPanelProps {
   layer: SpiroLayer | null;
@@ -76,9 +76,6 @@ const AdvancedPanel = ({ layer, updateLayer, isOpen, onToggle }: AdvancedPanelPr
             <div className="tooth-size-header">
               <span>Tooth Size: {layer.parameters.tooth}</span>
             </div>
-            <div className="tooth-size-description">
-              Sets the granularity of the fixed ring (R). Higher values create more regular patterns.
-            </div>
             <div className="optimal-tooth-list">
               {STANDARD_TOOTH_SIZES.map((size) => (
                 <button
@@ -90,38 +87,49 @@ const AdvancedPanel = ({ layer, updateLayer, isOpen, onToggle }: AdvancedPanelPr
                 </button>
               ))}
             </div>
+            <div className="tooth-size-description">
+              Sets the granularity of the fixed ring (R). Higher values create more regular patterns.
+            </div>
           </div>
         </div>
 
         <div className="advanced-parameter-group">
-          <label htmlFor="max-R">Maximum R Value: {layer.parameters.maxR}</label>
-          <input
-            id="max-R"
-            type="range"
-            min={100}
-            max={500}
-            step={10}
-            value={layer.parameters.maxR}
-            onChange={(e) => handleParameterChange('maxR', parseFloat(e.target.value))}
-          />
-          <div className="advanced-parameter-help">
-            Maximum allowed value for the fixed ring radius (R).
+          <div className="tooth-size-section">
+            <div className="tooth-size-header">
+              <span>Max Ring Size (R): {layer.parameters.maxR}</span>
+            </div>
+            <input
+              id="max-R"
+              type="range"
+              min={100}
+              max={500}
+              step={10}
+              value={layer.parameters.maxR}
+              onChange={(e) => handleParameterChange('maxR', parseFloat(e.target.value))}
+            />
+            <div className="tooth-size-description">
+              Maximum allowed value for the fixed ring radius (R).
+            </div>
           </div>
         </div>
 
         <div className="advanced-parameter-group">
-          <label htmlFor="max-r">Maximum r Value: {layer.parameters.maxr}</label>
-          <input
-            id="max-r"
-            type="range"
-            min={50}
-            max={250}
-            step={10}
-            value={layer.parameters.maxr}
-            onChange={(e) => handleParameterChange('maxr', parseFloat(e.target.value))}
-          />
-          <div className="advanced-parameter-help">
-            Maximum allowed value for the rolling gear radius (r).
+          <div className="tooth-size-section">
+            <div className="tooth-size-header">
+              <span>Max Gear Size (r): {layer.parameters.maxr}</span>
+            </div>
+            <input
+              id="max-r"
+              type="range"
+              min={50}
+              max={250}
+              step={10}
+              value={layer.parameters.maxr}
+              onChange={(e) => handleParameterChange('maxr', parseFloat(e.target.value))}
+            />
+            <div className="tooth-size-description">
+              Maximum allowed value for the rolling gear radius (r).
+            </div>
           </div>
         </div>
       </div>
