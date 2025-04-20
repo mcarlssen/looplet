@@ -8,6 +8,7 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "allowJs": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -17,7 +18,11 @@
     "strict": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    
+    /* Import handling */
+    "allowImportingTsExtensions": true,
+    "moduleDetection": "force"
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
