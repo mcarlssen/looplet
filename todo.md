@@ -1,6 +1,6 @@
 - add background texture, drop shadow
 
-- figure out how to make non-harmonic values represent better.
+- replace controls with MaterialUI or Origin controls instead
 
 - redux sidebar to condense
 

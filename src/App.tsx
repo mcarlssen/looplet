@@ -11,7 +11,7 @@ import './App.css'
 function App() {
   const [layers, setLayers] = useState<SpiroLayer[]>([]);
   const [activeLayerIndex, setActiveLayerIndex] = useState<number>(-1);
-  const [visualizerParam, setVisualizerParam] = useState<'R' | 'r' | 'd' | 'startAngle' | null>(null);
+  const [visualizerParam, setVisualizerParam] = useState<'R' | 'r' | 'd' | 'startAngle' | 'tooth' | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const addLayer = () => {
@@ -25,15 +25,21 @@ function App() {
       parameters: {
         R: baseLayer?.parameters.R ?? 200,
         r: baseLayer?.parameters.r ?? 75,
-        d: baseLayer?.parameters.d ?? 50,
+        d: baseLayer?.parameters.d ?? 50,  // This will be constrained below
         isHypotrochoid: baseLayer?.parameters.isHypotrochoid ?? true,
         startAngle: baseLayer?.parameters.startAngle ?? 0,
         strokeWidth: baseLayer?.parameters.strokeWidth ?? 2,
         blendMode: baseLayer?.parameters.blendMode ?? 'normal',
+        tooth: baseLayer?.parameters.tooth ?? 1,
+        maxR: baseLayer?.parameters.maxR ?? 300,
+        maxr: baseLayer?.parameters.maxr ?? 150,
         // Adjust color hue by +15 if there's a base layer
         color: baseLayer ? adjustHue(baseLayer.parameters.color, 15) : '#3060ff',
       }
     };
+
+    // Ensure d doesn't exceed r-1
+    newLayer.parameters.d = Math.min(newLayer.parameters.d, newLayer.parameters.r - 1);
 
     setLayers([...layers, newLayer]);
     setActiveLayerIndex(layers.length);

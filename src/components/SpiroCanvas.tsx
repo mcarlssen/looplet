@@ -6,8 +6,8 @@ import './components.css';
 interface SpiroCanvasProps {
   layers: SpiroLayer[];
   activeLayerIndex: number;
-  visualizerParam: 'R' | 'r' | 'd' | 'startAngle' | null;
-  setVisualizerParam: (param: 'R' | 'r' | 'd' | 'startAngle' | null) => void;
+  visualizerParam: 'R' | 'r' | 'd' | 'startAngle' | 'tooth' | null;
+  setVisualizerParam: (param: 'R' | 'r' | 'd' | 'startAngle' | 'tooth' | null) => void;
   exportImage: () => void;
   exportSVG: () => void;
 }
@@ -22,7 +22,12 @@ const SpiroCanvas = ({
 }: SpiroCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const visualizerRef = useRef<HTMLCanvasElement>(null);
-  const [visualizer, setVisualizer] = useState<VisualizerState>({
+  const [visualizer, setVisualizer] = useState<{
+    active: boolean;
+    parameterName: 'R' | 'r' | 'd' | 'startAngle' | 'tooth' | null;
+    fadeTimer: number | null;
+    startTime: number;
+  }>({
     active: false,
     parameterName: null,
     fadeTimer: null,
@@ -217,6 +222,24 @@ const SpiroCanvas = ({
         ctx.font = '16px Arial';
         ctx.fillStyle = 'rgba(0, 128, 255, 0.9)';
         ctx.fillText(`Rolling Gear (r): ${r}`, gearX + 10, gearY - 10);
+        break;
+        
+      case 'tooth':
+        // Visualize the tooth size
+        const toothSize = parameters.tooth;
+        
+        // Draw a small circle at the center to represent the tooth size
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255, 165, 0, 0.7)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.arc(centerX, centerY, toothSize, 0, 2 * Math.PI);
+        ctx.stroke();
+        
+        // Add label
+        ctx.font = '16px Arial';
+        ctx.fillStyle = 'rgba(255, 165, 0, 0.9)';
+        ctx.fillText(`Tooth Size: ${toothSize}`, centerX + toothSize + 10, centerY);
         break;
         
       case 'd':

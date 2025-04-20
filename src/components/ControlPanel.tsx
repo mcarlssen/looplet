@@ -2,20 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import { SpiroLayer } from '../types';
 import { calculateHarmonyFactor, getValidRValues, findNearestValidR } from '../utils/spiroCalculations';
+import AdvancedPanel from './AdvancedPanel';
 import './components.css';
+
+type ParameterKey = 'R' | 'r' | 'd' | 'startAngle' | 'tooth' | 'strokeWidth' | 'isHypotrochoid' | 'blendMode' | 'color';
 
 interface ControlPanelProps {
   layer: SpiroLayer | null;
   updateLayer: (layer: SpiroLayer) => void;
-  setVisualizerParam: (param: 'R' | 'r' | 'd' | 'startAngle' | null) => void;
+  setVisualizerParam: (param: ParameterKey | null) => void;
 }
 
 const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelProps) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [startAngleDegrees, setStartAngleDegrees] = useState<number>(0);
-  const [hoverParam, setHoverParam] = useState<'R' | 'r' | 'd' | 'startAngle' | null>(null);
+  const [hoverParam, setHoverParam] = useState<ParameterKey | null>(null);
   const [harmonyFactor, setHarmonyFactor] = useState<number>(0);
   const [validRValues, setValidRValues] = useState<number[]>([]);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const MIN_HARMONY = 0.5;
   const [colorPickerPosition, setColorPickerPosition] = useState({ top: 0, left: 0 });
 
@@ -38,47 +42,35 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
     );
   }
 
-  const handleParameterChange = (key: string, value: number | boolean | string) => {
+  const handleParameterChange = (
+    key: ParameterKey,
+    value: number | boolean | string
+  ) => {
     if (!layer) return;
-
-    let updatedValue = value;
     
-    // If changing R, find the nearest valid r value
-    if (key === 'R') {
-      const currentR = layer.parameters.r;
-      const nearestValidR = findNearestValidR(value as number, currentR, MIN_HARMONY);
-      
-      updateLayer({
-        ...layer,
-        parameters: {
-          ...layer.parameters,
-          R: value as number,
-          r: nearestValidR
-        }
-      });
-      
-      // Update visualizer for both parameters
-      setVisualizerParam('R');
-      setTimeout(() => setVisualizerParam('r'), 100);
-      return;
-    }
-    
-    // If changing r, validate against current R
-    if (key === 'r') {
-      const currentR = layer.parameters.R;
-      const nearestValidR = findNearestValidR(currentR, value as number, MIN_HARMONY);
-      updatedValue = nearestValidR;
-    }
-
-    updateLayer({
-      ...layer,
-      parameters: {
+    const newLayer = { ...layer };
+    if (key === 'tooth') {
+      newLayer.parameters = {
         ...layer.parameters,
-        [key]: updatedValue
-      }
-    });
-
-    setVisualizerParam(key as 'R' | 'r' | 'd' | 'startAngle');
+        tooth: value as number,
+        // Only round R to nearest tooth value, leave r unchanged
+        R: Math.round(layer.parameters.R / (value as number)) * (value as number)
+      };
+    } else if (key === 'r') {
+      // When r changes, ensure d doesn't exceed r-1
+      newLayer.parameters = {
+        ...layer.parameters,
+        r: value as number,
+        d: Math.min(layer.parameters.d, (value as number) - 1)
+      };
+    } else {
+      newLayer.parameters = {
+        ...layer.parameters,
+        [key]: value
+      };
+    }
+    
+    updateLayer(newLayer);
   };
 
   // Handle specific start angle change from degrees to radians
@@ -89,7 +81,7 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
   };
 
   // Handle mouse enter on parameter controls
-  const handleMouseEnter = (param: 'R' | 'r' | 'd' | 'startAngle') => {
+  const handleMouseEnter = (param: ParameterKey) => {
     setHoverParam(param);
     setVisualizerParam(param);
   };
@@ -118,31 +110,37 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
   
   // Common props for number inputs
   const numberInputProps = (
-    key: 'R' | 'r' | 'd' | 'strokeWidth',
+    key: ParameterKey,
     min: number,
     max: number,
-    step: number = 1
-  ) => ({
-    type: 'range',
-    min,
-    max,
-    step,
-    value: layer.parameters[key],
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      handleParameterChange(key, parseFloat(e.target.value));
-    },
-    ...(key !== 'strokeWidth' && {
+    step: number
+  ) => {
+    const value = key === 'tooth' 
+      ? layer.parameters.tooth 
+      : typeof layer.parameters[key] === 'number' 
+        ? layer.parameters[key] 
+        : 0;
+    
+    return {
+      type: 'range',
+      min,
+      max,
+      step,
+      value,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseFloat(e.target.value);
+        handleParameterChange(key, value);
+      },
       onMouseEnter: () => handleMouseEnter(key),
       onMouseLeave: handleMouseLeave,
       onMouseDown: () => handleMouseEnter(key),
       onMouseUp: () => {
-        // Keep visualizer showing as long as we're hovering
         if (hoverParam) {
           setVisualizerParam(hoverParam);
         }
       }
-    })
-  });
+    };
+  };
 
   const handleColorClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -194,6 +192,13 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
 
   return (
     <div className="control-panel">
+      <AdvancedPanel 
+        layer={layer}
+        updateLayer={updateLayer}
+        isOpen={showAdvanced}
+        onToggle={() => setShowAdvanced(!showAdvanced)}
+      />
+      
       <h2>Parameters</h2>
       
       <div className="harmony-indicator">
@@ -217,7 +222,7 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
         <label htmlFor="fixed-radius">Ring Radius (R): {layer.parameters.R}</label>
         <input
           id="fixed-radius"
-          {...numberInputProps('R', 50, 300, 1)}
+          {...numberInputProps('R', 50, layer.parameters.maxR, layer.parameters.tooth)}
         />
       </div>
       
@@ -229,11 +234,8 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
         <label htmlFor="rolling-radius">Gear Radius (r): {layer.parameters.r}</label>
         <input
           id="rolling-radius"
-          {...numberInputProps('r', 10, 150, 1)}
+          {...numberInputProps('r', 10, layer.parameters.maxr, 1)}
         />
-        {/* <div className="harmony-info">
-          Valid r values for current R: {validRValues.join(', ')}
-        </div> */}
       </div>
       
       <div 
@@ -244,34 +246,17 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
         <label htmlFor="pen-offset">Pen Offset (d): {layer.parameters.d}</label>
         <input
           id="pen-offset"
-          {...numberInputProps('d', 0, 150, 1)}
+          {...numberInputProps('d', 0, layer.parameters.r - 1, 1)}
         />
       </div>
       
       <div 
-        className="parameter-group"
+        className="parameter-group inline"
         onMouseEnter={() => handleMouseEnter('startAngle')}
         onMouseLeave={handleMouseLeave}
       >
-        <label htmlFor="start-angle">Rotation: {startAngleDegrees}°</label>
+        <label htmlFor="start-angle">Rotation:</label>
         <div className="angle-inputs">
-          <input
-            id="start-angle"
-            type="range"
-            min="0"
-            max="360"
-            step="1"
-            value={startAngleDegrees}
-            onChange={(e) => handleStartAngleChange(parseInt(e.target.value))}
-            onMouseEnter={() => handleMouseEnter('startAngle')}
-            onMouseLeave={handleMouseLeave}
-            onMouseDown={() => handleMouseEnter('startAngle')}
-            onMouseUp={() => {
-              if (hoverParam) {
-                setVisualizerParam(hoverParam);
-              }
-            }}
-          />
           <input
             type="number"
             min="0"
@@ -282,59 +267,26 @@ const ControlPanel = ({ layer, updateLayer, setVisualizerParam }: ControlPanelPr
             onFocus={() => handleMouseEnter('startAngle')}
             onBlur={handleMouseLeave}
           />
+          <span className="degree-symbol">°</span>
         </div>
       </div>
       
       <div className="parameter-group">
-        <label htmlFor="roll-type">Roll Type:</label>
-        <select
-          id="roll-type"
-          value={layer.parameters.isHypotrochoid ? 'inside' : 'outside'}
-          onChange={(e) => {
-            handleParameterChange('isHypotrochoid', e.target.value === 'inside');
-          }}
-        >
-          <option value="inside">Inside (Hypotrochoid)</option>
-          <option value="outside">Outside (Epitrochoid)</option>
-        </select>
-      </div>
-      
-      <div className="parameter-group">
-        <label htmlFor="stroke-width">Stroke Width: {layer.parameters.strokeWidth}px</label>
-        <input
-          id="stroke-width"
-          {...numberInputProps('strokeWidth', 1, 10, 0.5)}
-        />
-      </div>
-      
-      <div className="color-control">
-        <div className="style-title">Color</div>
-        <div 
-          className="color-preview" 
-          style={{ backgroundColor: layer.parameters.color }}
-          onClick={handleColorClick}
-        />
-        {showColorPicker && (
-          <>
-            <div 
-              className="color-picker-wrapper"
-              style={{
-                top: `${colorPickerPosition.top}px`,
-                left: `${colorPickerPosition.left}px`
-              }}
-            >
-              <HexColorPicker 
-                color={layer.parameters.color} 
-                onChange={(color) => handleParameterChange('color', color)}
-              />
-              <div className="color-picker-value">{layer.parameters.color}</div>
-            </div>
-            <div 
-              className="color-picker-cover"
-              onClick={() => setShowColorPicker(false)}
-            />
-          </>
-        )}
+        <div className="toggle-switch">
+          <input
+            id="roll-type"
+            type="checkbox"
+            checked={!layer.parameters.isHypotrochoid}
+            onChange={(e) => {
+              handleParameterChange('isHypotrochoid', !e.target.checked);
+            }}
+          />
+          <label htmlFor="roll-type" className="toggle-label">
+            <span className="toggle-text-inside">
+              {layer.parameters.isHypotrochoid ? 'Inside' : 'Outside'}
+            </span>
+          </label>
+        </div>
       </div>
     </div>
   );

@@ -113,85 +113,54 @@ const LayerPanel = ({
               >
                 <div className="layer-item-content">
                   <div className="layer-item-header">
-                    <div className="layer-visibility">
-                      <button 
-                        className={`visibility-toggle ${layer.visible ? 'visible' : 'hidden'}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleLayerVisibility(index);
-                        }}
-                        title={layer.visible ? 'Hide layer' : 'Show layer'}
-                      >
-                        {layer.visible ? '👁️' : '👁️‍🗨️'}
-                      </button>
-                    </div>
-                    
-                    {editingNameIndex === index ? (
-                      <input
-                        type="text"
-                        className="layer-name-input"
-                        value={tempName}
-                        onChange={(e) => setTempName(e.target.value)}
-                        onBlur={saveLayerName}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') saveLayerName();
-                          if (e.key === 'Escape') setEditingNameIndex(null);
-                        }}
-                        autoFocus
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    ) : (
-                      <div 
-                        className="layer-name"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          startEditingName(index);
-                        }}
-                        title="Click to rename"
-                      >
-                        {layer.name}
+                    <div className="layer-header-row">
+                      <div className="layer-visibility">
+                        <button 
+                          className={`visibility-toggle ${layer.visible ? 'visible' : 'hidden'}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleLayerVisibility(index);
+                          }}
+                          title={layer.visible ? 'Hide layer' : 'Show layer'}
+                        >
+                          {layer.visible ? '👁️' : '👁️‍🗨️'}
+                        </button>
                       </div>
-                    )}
-                  </div>
-                  
-                  <div className="layer-item-controls">
-                    <div className="layer-controls">
-                      <select
-                        className="blend-mode-select"
-                        value={layer.parameters.blendMode}
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          handleParameterChange(index, 'blendMode', e.target.value);
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                        title="Blend Mode"
-                      >
-                        <option value="normal">Normal</option>
-                        <option value="multiply">Multiply</option>
-                        <option value="screen">Screen</option>
-                        <option value="overlay">Overlay</option>
-                        <option value="darken">Darken</option>
-                        <option value="lighten">Lighten</option>
-                        <option value="color-dodge">Color Dodge</option>
-                        <option value="color-burn">Color Burn</option>
-                        <option value="hard-light">Hard Light</option>
-                        <option value="soft-light">Soft Light</option>
-                        <option value="difference">Difference</option>
-                        <option value="exclusion">Exclusion</option>
-                        <option value="hue">Hue</option>
-                        <option value="saturation">Saturation</option>
-                        <option value="color">Color</option>
-                        <option value="luminosity">Luminosity</option>
-                      </select>
                       
-                      <div 
-                        className="layer-color-preview"
-                        style={{ backgroundColor: layer.parameters.color }}
-                        title="Click to change color"
-                        onClick={(e) => toggleColorPicker(index, e)}
-                      />
-                      
+                      {editingNameIndex === index ? (
+                        <input
+                          type="text"
+                          className="layer-name-input"
+                          value={tempName}
+                          onChange={(e) => setTempName(e.target.value)}
+                          onBlur={saveLayerName}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') saveLayerName();
+                            if (e.key === 'Escape') setEditingNameIndex(null);
+                          }}
+                          autoFocus
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      ) : (
+                        <div 
+                          className="layer-name"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startEditingName(index);
+                          }}
+                          title="Click to rename"
+                        >
+                          {layer.name}
+                        </div>
+                      )}
+
                       <div className="layer-actions">
+                        <div 
+                          className="layer-color-preview"
+                          style={{ backgroundColor: layer.parameters.color }}
+                          title="Click to change color"
+                          onClick={(e) => toggleColorPicker(index, e)}
+                        />
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
@@ -224,26 +193,67 @@ const LayerPanel = ({
                         </button>
                       </div>
                     </div>
-                    
-                    {colorPickerLayerIndex === index && (
-                      <div className="color-picker-popover layer-color-picker" onClick={(e) => e.stopPropagation()}>
-                        <div 
-                          className="color-picker-cover" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setColorPickerLayerIndex(null);
-                          }}
-                        />
-                        <div className="color-picker-wrapper">
-                          <HexColorPicker
-                            color={layer.parameters.color}
-                            onChange={(color) => handleParameterChange(index, 'color', color)}
-                          />
-                          <div className="color-picker-value">{layer.parameters.color}</div>
-                        </div>
-                      </div>
-                    )}
+
+                    <div className="layer-controls">
+                      <select
+                        className="blend-mode-select"
+                        value={layer.parameters.blendMode}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          handleParameterChange(index, 'blendMode', e.target.value);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        title="Blend Mode"
+                      >
+                        <option value="normal">Normal</option>
+                        <option value="multiply">Multiply</option>
+                        <option value="screen">Screen</option>
+                        <option value="overlay">Overlay</option>
+                        <option value="darken">Darken</option>
+                        <option value="lighten">Lighten</option>
+                        <option value="color-dodge">Color Dodge</option>
+                        <option value="color-burn">Color Burn</option>
+                        <option value="hard-light">Hard Light</option>
+                        <option value="soft-light">Soft Light</option>
+                        <option value="difference">Difference</option>
+                        <option value="exclusion">Exclusion</option>
+                        <option value="hue">Hue</option>
+                        <option value="saturation">Saturation</option>
+                        <option value="color">Color</option>
+                        <option value="luminosity">Luminosity</option>
+                      </select>
+                      
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        step="0.5"
+                        value={layer.parameters.strokeWidth}
+                        onChange={(e) => handleParameterChange(index, 'strokeWidth', parseFloat(e.target.value))}
+                        className="stroke-width-input"
+                        title="Stroke width"
+                      />
+                    </div>
                   </div>
+                  
+                  {colorPickerLayerIndex === index && (
+                    <div className="color-picker-popover layer-color-picker" onClick={(e) => e.stopPropagation()}>
+                      <div 
+                        className="color-picker-cover" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setColorPickerLayerIndex(null);
+                        }}
+                      />
+                      <div className="color-picker-wrapper">
+                        <HexColorPicker
+                          color={layer.parameters.color}
+                          onChange={(color) => handleParameterChange(index, 'color', color)}
+                        />
+                        <div className="color-picker-value">{layer.parameters.color}</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </li>
             ))}

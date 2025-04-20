@@ -8,6 +8,59 @@ export const gcd = (a: number, b: number): number => {
 };
 
 /**
+ * Find all factors of a number
+ */
+export const getFactors = (n: number): number[] => {
+  const factors: number[] = [];
+  for (let i = 1; i <= Math.sqrt(n); i++) {
+    if (n % i === 0) {
+      factors.push(i);
+      if (i !== n / i) {
+        factors.push(n / i);
+      }
+    }
+  }
+  return factors.sort((a, b) => a - b);
+};
+
+/**
+ * Calculate optimal tooth sizes for given R and r values
+ * Returns an array of tooth sizes that would create harmonious patterns
+ */
+export function calculateOptimalToothSizes(R: number): number[] {
+  // Calculate optimal tooth sizes based on R
+  // We want tooth sizes that divide R evenly
+  const maxTeeth = Math.min(24, Math.floor(R / 4)); // Cap at 24 teeth or R/4, whichever is smaller
+  const minTeeth = Math.max(4, Math.floor(R / 20)); // At least 4 teeth or R/20, whichever is larger
+  
+  const optimalSizes: number[] = [];
+  for (let i = minTeeth; i <= maxTeeth; i++) {
+    if (R % i < 0.1 || (R % i > i - 0.1)) { // Allow for small floating point errors
+      optimalSizes.push(i);
+    }
+  }
+  
+  return optimalSizes;
+}
+
+/**
+ * Calculate how "optimal" a tooth size is for given R and r values
+ * Returns a value between 0 and 1, where 1 is perfectly optimal
+ */
+export const calculateToothHarmony = (R: number, r: number, tooth: number): number => {
+  // Check if tooth size divides evenly into both R and r
+  const rRemainder = r % tooth;
+  const RRemainder = R % tooth;
+  
+  // Calculate how close the remainders are to 0 or tooth
+  const rError = Math.min(rRemainder, tooth - rRemainder) / tooth;
+  const RError = Math.min(RRemainder, tooth - RRemainder) / tooth;
+  
+  // Return harmony factor (1 - average error)
+  return 1 - (rError + RError) / 2;
+};
+
+/**
  * Calculate the number of rotations needed for the curve to close
  */
 export const calculateRotations = (R: number, r: number): number => {
@@ -91,38 +144,75 @@ export const generateSpirographPoints = (
 };
 
 /**
+ * Calculate symmetry score based on shared factors and their relationships
+ */
+const calculateSymmetryScore = (R: number, r: number): number => {
+  // Get prime factors of both numbers
+  const factorsR = getFactors(R);
+  const factorsR5 = factorsR.filter(f => f >= 5 && f <= R/4);  // Consider meaningful factors
+  const factorsr = getFactors(r);
+  const factorsr5 = factorsr.filter(f => f >= 5 && f <= r/2);  // Consider meaningful factors
+  
+  // Find shared factors
+  const sharedFactors = factorsR5.filter(f => factorsr5.includes(f));
+  
+  // Calculate base symmetry score from shared factors
+  const baseSymmetry = sharedFactors.length > 0 ? 
+    Math.min(1, sharedFactors.length * 0.3) : 0;
+  
+  // Calculate alignment score based on how r divides into R
+  const division = R / r;
+  const nearestWhole = Math.round(division);
+  const alignmentError = Math.abs(division - nearestWhole);
+  
+  // Make alignment score more strict - require very close alignment
+  const alignmentScore = Math.max(0, 1 - alignmentError * 4);
+  
+  // Penalize high rotation counts without shared factors
+  const rotationPenalty = sharedFactors.length === 0 && r > 25 ? 0.5 : 1;
+  
+  // Combine scores with heavier weight on shared factors
+  return ((baseSymmetry * 0.6) + (alignmentScore * 0.4)) * rotationPenalty;
+};
+
+/**
  * Calculate the harmony factor of a spirograph configuration
- * Higher values (closer to 1) indicate smoother, less dense patterns
- * Lower values indicate more angular, dense patterns
+ * Higher values (closer to 1) indicate more visually pleasing patterns
+ * Considers pattern complexity, organization, and symmetry
  */
 export const calculateHarmonyFactor = (R: number, r: number): number => {
   if (R === 0 || r === 0) return 0;
   
-  // Check if r divides evenly into R (or nearly so)
-  const remainder = R % r;
   const gcdValue = gcd(R, r);
-  
-  // Calculate ratio of gcd to the smaller of R and r
-  // This gives us a value between 0 and 1
-  const gcdRatio = gcdValue / Math.min(R, r);
-  
-  // Calculate how many rotations needed to close the curve
   const rotations = r / gcdValue;
   
-  // Simple ratio - when r is a simple fraction of R (1/2, 1/3, etc.), 
-  // patterns tend to be more pleasing
-  const simpleRatio = Math.min(R, r) / Math.max(R, r);
+  // Pattern Complexity Score (0 to 1)
+  // - Peaks at around 12-20 rotations (most interesting visual patterns)
+  // - Lower for too few (<5) or too many (>25) rotations
+  const optimalRotations = 16;
+  const rotationSpread = 8;
+  const complexityScore = Math.exp(
+    -Math.pow(rotations - optimalRotations, 2) / (2 * rotationSpread * rotationSpread)
+  );
   
-  // Combine factors:
-  // 1. We want higher gcdRatio (means values share common factors)
-  // 2. Lower rotations are generally better (less dense)
-  // 3. Simple ratios often produce pleasing results
+  // Visual Organization Score (0 to 1)
+  // - How evenly the pattern fills the space
+  // - Based on the ratio of r to R, with preference for ratios between 1/8 and 1/4
+  const ratio = r / R;
+  const optimalRatio = 0.175; // Slightly smaller ratio preferred
+  const ratioSpread = 0.125;  // Tighter spread
+  const organizationScore = Math.exp(
+    -Math.pow(ratio - optimalRatio, 2) / (2 * ratioSpread * ratioSpread)
+  );
   
-  // Map rotations to a 0-1 scale where 1 is good (few rotations)
-  const rotationFactor = Math.min(1, 5 / rotations);
+  // Symmetry Score (0 to 1)
+  // - Considers shared factors and how well rotations align
+  const symmetryScore = calculateSymmetryScore(R, r);
   
-  // Combine with weights
-  return (gcdRatio * 0.4) + (rotationFactor * 0.4) + (simpleRatio * 0.2);
+  // Combine scores with adjusted weights to emphasize symmetry
+  return (complexityScore * 0.25) + 
+         (organizationScore * 0.25) + 
+         (symmetryScore * 0.5);  // Increased weight on symmetry
 };
 
 export const getValidRValues = (R: number, minHarmony: number = 0.5): number[] => {

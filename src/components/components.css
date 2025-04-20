@@ -46,6 +46,7 @@
   overflow-y: auto;
   max-height: 50vh;
   box-sizing: border-box;
+  position: relative;
 }
 
 .control-panel h2 {
@@ -180,7 +181,16 @@
 
 .layer-item-header {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.layer-header-row {
+  display: flex;
   align-items: center;
+  gap: 8px;
+  width: 100%;
 }
 
 .layer-item-controls {
@@ -237,7 +247,28 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 100%;
+  padding-left: 34px; /* Align with layer name, accounting for visibility toggle */
+}
+
+.stroke-width-input {
+  width: 50px;
+  padding: 2px 4px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 0.9rem;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.stroke-width-input:hover {
+  border-color: #ccc;
+  background-color: #f0f0f0;
+}
+
+.stroke-width-input:focus {
+  outline: none;
+  border-color: #3060ff;
+  background-color: #fff;
 }
 
 .blend-mode-select {
@@ -247,7 +278,7 @@
   border-radius: 3px;
   background-color: #f9f9f9;
   cursor: pointer;
-  flex-grow: 1;
+  width: 100px;
 }
 
 .blend-mode-select:hover {
@@ -284,7 +315,9 @@
 
 .layer-actions {
   display: flex;
+  align-items: center;
   gap: 4px;
+  margin-left: 8px;
 }
 
 .layer-actions button {
@@ -335,19 +368,21 @@
 .angle-inputs {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.angle-inputs input[type="range"] {
-  flex: 1;
+  gap: 4px;
 }
 
 .angle-inputs .degree-input {
   width: 60px;
-  padding: 4px;
+  padding: 4px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  text-align: center;
+  text-align: right;
+  font-size: 0.9rem;
+}
+
+.angle-inputs .degree-symbol {
+  color: #555;
+  font-size: 0.9rem;
 }
 
 /* Harmony indicator */
@@ -441,4 +476,298 @@
   font-size: 14px;
   font-family: monospace;
   color: #333;
+}
+
+/* Advanced Parameters Panel */
+.advanced-panel-container {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
+}
+
+.advanced-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: #f8f8f8;
+  border: 1px solid #eee;
+  padding: 12px;
+  width: 250px;
+  height: 100%;
+  box-sizing: border-box;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  transform: translateX(-24px);
+  transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
+  pointer-events: auto;
+  opacity: 0;
+}
+
+.advanced-panel-container.open .advanced-panel {
+  opacity: 1;
+}
+
+.advanced-panel-tab {
+  position: absolute;
+  left: -42px;
+  top: 12px;
+  background-color: #f8f8f8;
+  border: 1px solid #eee;
+  border-right: 1px solid #eee;
+  border-radius: 4px 0 0 4px;
+  padding: 12px 6px;
+  cursor: pointer;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  pointer-events: auto;
+  z-index: 101;
+}
+
+.advanced-panel-tab:hover {
+  background-color: #f0f0f0;
+}
+
+.advanced-panel-tab svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.3s ease-in-out;
+  transform: rotate(180deg);
+}
+
+.advanced-panel-container.open .advanced-panel-tab svg {
+  transform: rotate(0deg);
+}
+
+.advanced-panel h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1rem;
+  color: #333;
+  user-select: none;
+}
+
+.advanced-parameter-group {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.advanced-parameter-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.advanced-parameter-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: #555;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.advanced-parameter-group input[type="range"] {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.advanced-parameter-help {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.optimal-tooth-sizes {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.optimal-tooth-header {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.optimal-tooth-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.optimal-tooth-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.optimal-tooth-button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
+}
+
+.optimal-tooth-button.active {
+  background-color: #3060ff;
+  color: white;
+  border-color: #2050dd;
+}
+
+/* Advanced Parameters Panel */
+.tooth-size-section {
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tooth-size-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.tooth-size-description {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.optimal-tooth-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.optimal-tooth-button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  min-width: 40px;
+  text-align: center;
+}
+
+.optimal-tooth-button:hover {
+  background-color: #f0f4ff;
+  border-color: #3060ff;
+  transform: scale(1.05);
+}
+
+.optimal-tooth-button.active {
+  background-color: #3060ff;
+  color: white;
+  border-color: #2050dd;
+  font-weight: 500;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.toggle-switch input[type="checkbox"] {
+  height: 0;
+  width: 0;
+  visibility: hidden;
+  position: absolute;
+}
+
+.toggle-label {
+  cursor: pointer;
+  width: 100%;
+  height: 32px;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  position: relative;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  overflow: hidden;
+}
+
+.toggle-switch input:checked + .toggle-label {
+  background: #3060ff;
+}
+
+.toggle-text-inside {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  z-index: 2;
+  user-select: none;
+  position: relative;
+}
+
+.toggle-switch input:checked + .toggle-label .toggle-text-inside {
+  color: white;
+}
+
+.toggle-label::before {
+  content: '';
+  position: absolute;
+  width: calc(100% - 4px);
+  height: 28px;
+  background: #fff;
+  border-radius: 4px;
+  transition: 0.3s;
+  left: 2px;
+  z-index: 1;
+}
+
+.toggle-switch input:checked + .toggle-label::before {
+  background: #3060ff;
+}
+
+/* Remove old toggle styles */
+.toggle-circle {
+  display: none;
+}
+
+.toggle-text {
+  display: none;
+}
+
+/* Parameter group with inline label and control */
+.parameter-group.inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.parameter-group.inline label {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+/* Remove old color control styles */
+.color-control {
+  display: none;
 } 

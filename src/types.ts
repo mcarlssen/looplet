@@ -7,6 +7,9 @@ export type SpiroParameters = {
   color: string;        // Stroke color
   strokeWidth: number;  // Stroke width
   blendMode: string;    // CSS blend mode
+  tooth: number;        // Minimum granularity for R and r values
+  maxR: number;         // Maximum allowed value for R
+  maxr: number;         // Maximum allowed value for r
 };
 
 export type SpiroLayer = {
