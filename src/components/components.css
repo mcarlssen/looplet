@@ -27,7 +27,7 @@
   left: 20px;
   font-size: 0.8rem;
   color: #333;
-  z-index: 1;
+  z-index: 10;
   text-align: left;
   padding: 8px 16px;
   background-color: rgba(255, 255, 255, 1);
@@ -36,14 +36,14 @@
 }
 
 .app-footer a {
-  color: #3060ff;
+  color: #666;
   text-decoration: none;
   transition: color 0.2s ease;
   padding: 0 4px;
 }
 
 .app-footer a:hover {
-  color: #2050dd;
+  color: #333;
   text-decoration: underline;
 }
 
@@ -63,18 +63,23 @@
 }
 
 .export-button {
-  background-color: #3060ff;
+  background-color: #666;
   color: white;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .export-button:hover {
-  background-color: #2050dd;
+  background-color: #333;
+  transform: translateY(-1px);
+}
+
+.export-button:active {
+  transform: translateY(0);
 }
 
 /* Control Panel styling */
@@ -102,13 +107,53 @@
 .parameter-group label {
   display: block;
   margin-bottom: 6px;
-  color: #555;
+  color: #666;
   font-size: 0.9rem;
 }
 
 .parameter-group input[type="range"] {
   width: 100%;
   margin-top: 4px;
+  -webkit-appearance: none;
+  height: 4px;
+  background: #ddd;
+  border-radius: 2px;
+  outline: none;
+}
+
+.parameter-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #666;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.parameter-group input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  background: #333;
+}
+
+.parameter-group input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #666;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.parameter-group input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  background: #333;
+}
+
+.parameter-group input[type="range"]::-moz-range-track {
+  background: #ddd;
+  border-radius: 2px;
 }
 
 .parameter-group select {
@@ -117,6 +162,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   background-color: white;
+  color: #333;
 }
 
 .color-picker-container {
@@ -190,7 +236,7 @@
 }
 
 .no-layers-message {
-  color: #777;
+  color: #666;
   font-style: italic;
   text-align: center;
   padding: 20px 0;
@@ -243,12 +289,12 @@
 }
 
 .layer-item:hover {
-  background-color: #f0f4ff;
+  background-color: #f0f0f0;
 }
 
 .layer-item.active {
-  background-color: #e0e8ff;
-  border-color: #3060ff;
+  background-color: #e0e0e0;
+  border-color: #666;
 }
 
 .layer-visibility {
@@ -271,6 +317,7 @@
   border-radius: 3px;
   transition: background-color 0.2s;
   cursor: text;
+  color: #333;
 }
 
 .layer-name:hover {
@@ -281,9 +328,10 @@
   flex-grow: 1;
   font-size: 0.9rem;
   padding: 2px 6px;
-  border: 1px solid #3060ff;
+  border: 1px solid #666;
   border-radius: 3px;
   outline: none;
+  color: #333;
 }
 
 .layer-controls {
@@ -295,6 +343,7 @@
 .layer-controls .control-label {
   font-size: .7rem;
   font-family: var(--font-body);
+  color: #666;
 }
 
 /* Apply consistent font styling to all controls */
@@ -316,6 +365,7 @@
   border-radius: 3px;
   background-color: #f9f9f9;
   cursor: pointer;
+  color: #333;
 }
 
 .blend-mode-select:hover,
@@ -340,6 +390,7 @@
   font-size: 0.9rem;
   text-align: center;
   background-color: #f9f9f9;
+  color: #333;
 }
 
 .stroke-width-input:hover {
@@ -349,7 +400,7 @@
 
 .stroke-width-input:focus {
   outline: none;
-  border-color: #3060ff;
+  border-color: #666;
   background-color: #fff;
 }
 
@@ -459,7 +510,7 @@
 .add-layer-button {
   width: 100%;
   padding: 10px 16px;
-  background-color: #3060ff;
+  background-color: #666;
   color: white;
   border: none;
   border-radius: 4px;
@@ -470,7 +521,7 @@
 }
 
 .add-layer-button:hover {
-  background-color: #2050dd;
+  background-color: #333;
 }
 
 .angle-inputs {
@@ -497,7 +548,7 @@
 
 .angle-inputs .degree-input:focus {
   outline: none;
-  border-color: #3060ff;
+  border-color: #666;
   background-color: #fff;
 }
 
@@ -713,16 +764,14 @@
 }
 
 .optimal-tooth-button:hover {
-  background-color: #f0f4ff;
-  border-color: #3060ff;
-  transform: scale(1.05);
+  background-color: #f0f0f0;
+  border-color: #666;
 }
 
 .optimal-tooth-button.active {
-  background-color: #3060ff;
+  background-color: #666;
   color: white;
-  border-color: #2050dd;
-  font-weight: 500;
+  border-color: #333;
 }
 
 /* Advanced Parameters Panel */
@@ -762,7 +811,7 @@
   -webkit-appearance: none;
   width: 16px;
   height: 16px;
-  background-color: #3060ff;
+  background-color: #666;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -770,13 +819,13 @@
 
 .tooth-size-section input[type="range"]::-webkit-slider-thumb:hover {
   transform: scale(1.1);
-  background-color: #2050dd;
+  background-color: #333;
 }
 
 .tooth-size-section input[type="range"]::-moz-range-thumb {
   width: 16px;
   height: 16px;
-  background-color: #3060ff;
+  background-color: #666;
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -785,7 +834,7 @@
 
 .tooth-size-section input[type="range"]::-moz-range-thumb:hover {
   transform: scale(1.1);
-  background-color: #2050dd;
+  background-color: #333;
 }
 
 .tooth-size-section input[type="range"]:focus {
@@ -823,7 +872,7 @@
   width: 100%;
   max-width: 300px;
   height: 24px;
-  background: #2140a5;
+  background: #666;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -840,6 +889,7 @@
   font-size: 0.9rem;
   font-weight: 500;
   z-index: 2;
+  padding-top:2px;
   user-select: none;
   position: relative;
   width: 100%;
@@ -878,6 +928,7 @@
 .parameter-group.inline label {
   margin-bottom: 0;
   flex-shrink: 0;
+  color: #666;
 }
 
 /* Remove old color control styles */

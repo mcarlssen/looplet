@@ -6,8 +6,8 @@ import './components.css';
 interface SpiroCanvasProps {
   layers: SpiroLayer[];
   activeLayerIndex: number;
-  visualizerParam: 'R' | 'r' | 'd' | 'startAngle' | 'tooth' | null;
-  setVisualizerParam: (param: 'R' | 'r' | 'd' | 'startAngle' | 'tooth' | null) => void;
+  visualizerParam: 'R' | 'r' | 'd' | 'startAngle' | 'tooth' | 'strokeWidth' | 'isHypotrochoid' | 'blendMode' | 'color' | null;
+  setVisualizerParam: (param: 'R' | 'r' | 'd' | 'startAngle' | 'tooth' | 'strokeWidth' | 'isHypotrochoid' | 'blendMode' | 'color' | null) => void;
   exportImage: () => void;
   exportSVG: () => void;
 }
@@ -24,7 +24,7 @@ const SpiroCanvas = ({
   const visualizerRef = useRef<HTMLCanvasElement>(null);
   const [visualizer, setVisualizer] = useState<{
     active: boolean;
-    parameterName: 'R' | 'r' | 'd' | 'startAngle' | 'tooth' | null;
+    parameterName: 'R' | 'r' | 'd' | 'startAngle' | 'tooth' | 'strokeWidth' | 'isHypotrochoid' | 'blendMode' | 'color' | null;
     fadeTimer: number | null;
     startTime: number;
   }>({
@@ -359,6 +359,9 @@ const SpiroCanvas = ({
           pointerEvents: 'none'
         }}
       />
+      <div className="app-footer">
+        built by @mcarlssen 2025 - <a href="https://github.com/mcarlssen" target="_blank" rel="noopener noreferrer">github</a> - <a href="https://linkedin.com/in/mcarlssen" target="_blank" rel="noopener noreferrer">linkedin</a> - <a href="https://threads.net/@mcarlssen" target="_blank" rel="noopener noreferrer">threads</a>
+      </div>
     </div>
   );
 };

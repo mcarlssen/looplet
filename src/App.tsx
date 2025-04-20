@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import SpiroCanvas from './components/SpiroCanvas'
 import ControlPanel from './components/ControlPanel'
 import LayerPanel from './components/LayerPanel'
-import { SpiroLayer } from './types'
+import { SpiroLayer, SpiroParameters } from './types'
 import { toPng } from 'html-to-image'
 import { Analytics } from "@vercel/analytics/react"
 import { generateSpirographPoints } from './utils/spiroCalculations'
@@ -11,8 +11,23 @@ import './App.css'
 function App() {
   const [layers, setLayers] = useState<SpiroLayer[]>([]);
   const [activeLayerIndex, setActiveLayerIndex] = useState<number>(-1);
-  const [visualizerParam, setVisualizerParam] = useState<'R' | 'r' | 'd' | 'startAngle' | 'tooth' | null>(null);
+  const [visualizerParam, setVisualizerParam] = useState<'R' | 'r' | 'd' | 'startAngle' | 'tooth' | 'strokeWidth' | 'isHypotrochoid' | 'blendMode' | 'color' | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [defaultParameters] = useState<SpiroParameters>({
+    R: 100,
+    r: 50,
+    d: 50,
+    isHypotrochoid: false,
+    startAngle: 0,
+    strokeWidth: 2,
+    blendMode: 'normal',
+    tooth: 0,
+    maxR: 200,
+    maxr: 100,
+    color: '#000000',
+    lineStyle: 'solid',
+    harmonyThreshold: 0.1
+  });
 
   const addLayer = () => {
     // If there are existing layers, duplicate the last one, otherwise use defaults
@@ -35,6 +50,8 @@ function App() {
         maxr: baseLayer?.parameters.maxr ?? 150,
         // Adjust color hue by +15 if there's a base layer
         color: baseLayer ? adjustHue(baseLayer.parameters.color, 15) : '#3060ff',
+        lineStyle: baseLayer?.parameters.lineStyle ?? 'solid',
+        harmonyThreshold: baseLayer?.parameters.harmonyThreshold ?? 0.1
       }
     };
 
