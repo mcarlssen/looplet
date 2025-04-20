@@ -1,0 +1,83 @@
+.app-container {
+  display: flex;
+  width: 95%;
+  height: 95vh;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.canvas-container {
+  flex: 3;
+  position: relative;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+  margin-right: 20px;
+}
+
+.sidebar-container {
+  flex: 1;
+  min-width: 280px;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  padding: 12px;
+  margin-left: 20px;
+}
+
+.panels-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  padding: 0 6px;
+}
+
+.export-buttons-container {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.export-button {
+  padding: 6px 12px;
+  background-color: #3060ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 400;
+  transition: background-color 0.2s;
+}
+
+.export-button:hover {
+  background-color: #2050dd;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .canvas-container {
+    flex: 2;
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+
+  .sidebar-container {
+    flex: 1;
+    max-width: 100%;
+    margin-left: 0;
+  }
+} 
